@@ -35,9 +35,6 @@ mainWidget::mainWidget(QWidget *parent) : QWidget(parent)
     connect(m_exportBtn, SIGNAL(clicked()), this, SLOT(onExport()));
     connect(m_clearBtn, SIGNAL(clicked()), this, SLOT(onClear()));
     connect(m_methodBtn, SIGNAL(clicked()), this, SLOT(onMethod()));
-#ifdef MA
-    connect(m_methodBtn, SIGNAL(clicked()), this, SLOT(onMethodMA()));
-#endif
 
     connect(m_queThEdit, SIGNAL(returnPressed()), this, SLOT(onSetQue()));
 
@@ -99,14 +96,12 @@ void mainWidget::onMethod()
     }
 
     m_chart->setMethod(filter);
+    onMethodMA();
 }
 
 #ifdef MA
 void mainWidget::onMethodMA()
 {
-    m_method++;
-    if(m_method > 2) m_method = 0;
-
     ILightFilter* filter = nullptr;
     if(m_method == 0)
     {

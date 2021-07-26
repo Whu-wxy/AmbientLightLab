@@ -27,7 +27,9 @@ private:
     QLineEdit* m_queThEdit;
     QPushButton* m_methodBtn;
     int m_method;
-
+#ifdef MA
+    void onMethodMA();
+#endif
 signals:
 
 public slots:
@@ -35,9 +37,7 @@ public slots:
     void onClear();
     void onSetQue();
     void onMethod();
-#ifdef MA
-    void onMethodMA();
-#endif
+
 };
 
 #endif // MAINWIDGET_H

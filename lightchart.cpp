@@ -269,7 +269,7 @@ int LightChart::stablize2(int lux)
     {
         moveNum2++;
         int iReduce = 0;
-        if(moveNum2 > getQueueLimit())
+        if(moveNum2 > getQueueLimit()*2)
         {
             moveNum2 = 0;
             iReduce = 1;
