@@ -87,12 +87,19 @@ void mainWidget::onMethod()
     }
     else if(m_method == 2)
     {
+//        if(m_queThEdit->text().length() == 0)
+//            filter = new HysteresisMinMax(m_chart->getQueueLimit());
+//        else
+//            filter = new HysteresisMinMax(m_queThEdit->text().toInt());
+//        m_methodBtn->setText("滞后MinMax");
+//        qDebug()<<"onMethod changeto:"<<"HysteresisMinMax";
+
         if(m_queThEdit->text().length() == 0)
-            filter = new HysteresisMinMax(m_chart->getQueueLimit());
+            filter = new dynamicLightFilter(m_chart, m_chart->getQueueLimit());
         else
-            filter = new HysteresisMinMax(m_queThEdit->text().toInt());
-        m_methodBtn->setText("滞后MinMax");
-        qDebug()<<"onMethod changeto:"<<"HysteresisMinMax";
+            filter = new dynamicLightFilter(m_chart, m_queThEdit->text().toInt());
+        m_methodBtn->setText("滞后exp");
+        qDebug()<<"onMethod changeto:"<<"dynamicLightFilter";
     }
 
     m_chart->setMethod(filter);
@@ -123,6 +130,11 @@ void mainWidget::onMethodMA()
 //            filter = new HysteresisMinMax(m_chart->getQueueLimit()*2);
 //        else
 //            filter = new HysteresisMinMax(m_queThEdit->text().toInt()*2);
+
+        if(m_queThEdit->text().length() == 0)
+            filter = new dynamicLightFilter(m_chart, m_chart->getQueueLimit());
+        else
+            filter = new dynamicLightFilter(m_chart, m_queThEdit->text().toInt());
     }
 
     m_chart->setMethodMA(filter);

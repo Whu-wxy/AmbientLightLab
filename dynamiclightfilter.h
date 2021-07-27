@@ -58,6 +58,22 @@ public:
         return qSqrt((pSigma/n - sigma*sigma)) ;
     }
 
+    double log_StandardDeviation(QQueue<int> list ){
+        if(list.count() == 0) return 0;
+
+        int n = list.count();
+        double sigma = 0, pSigma = 0;
+        for (int i = 0; i < n; ++i) {
+            int v = list.at(i);
+            double logv = log(v+1);   // log为e为底，   log10（）
+            sigma += logv;        // sum
+            pSigma += logv*logv;     // 平方和
+        }
+        sigma /= list.count ();          // 获得平均值
+        return qSqrt((pSigma/n - sigma*sigma)) ;
+    }
+
+
     double mean(QQueue<int> list ){
         if(list.count() == 0) return 0;
 
@@ -66,6 +82,19 @@ public:
         for (int i = 0; i < n; ++i) {
             int v = list.at(i);
             sigma += v;        // sum
+        }
+        sigma /= list.count ();          // 获得平均值
+        return sigma;
+    }
+
+    double log_mean(QQueue<int> list ){
+        if(list.count() == 0) return 0;
+
+        int n = list.count();
+        double sigma = 0;
+        for (int i = 0; i < n; ++i) {
+            int v = list.at(i);
+            sigma += log(v);        // sum
         }
         sigma /= list.count ();          // 获得平均值
         return sigma;
