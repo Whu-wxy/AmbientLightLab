@@ -2,7 +2,6 @@
 #define LIGHTFILTER_H
 
 #include <QQueue>
-#include "utils.h"
 #include "ilightfilter.h"
 
 using namespace std;

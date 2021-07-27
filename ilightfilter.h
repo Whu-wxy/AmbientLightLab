@@ -1,6 +1,7 @@
 #ifndef ILIGHTFILTER_H
 #define ILIGHTFILTER_H
 
+#include "QString"
 
 class ILightFilter
 {
@@ -14,7 +15,7 @@ public:
     int getQueueLimit() {return m_numTh; }
 
     int m_numTh = 4;
-
+    QString m_methodName = "ILightFilter";
 
 };
 

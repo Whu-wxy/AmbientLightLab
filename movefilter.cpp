@@ -7,6 +7,8 @@ movefilter::movefilter(int numTh)
     m_lastStable = -1;
 
     m_frictionFactor = 50;
+    m_methodName = "movefilter";
+
 }
 
 int movefilter::stableLux(int lux)

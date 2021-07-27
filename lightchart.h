@@ -9,11 +9,18 @@
 
 #include "ilightfilter.h"
 #include "lightfilter.h"
+#include "hysteresisminmax.h"
 
 #include <QDialog>
 #include <QTime>
+
+#ifdef Q_OS_ANDROID
 #include <QLightSensor>
 #include <QLightReading>
+#else
+#include "filereader.h"
+#include "QTimer"
+#endif
 
 //QChart
 #include <QtCharts>
@@ -21,6 +28,7 @@ using namespace QtCharts;
 using namespace std;
 
 #define MA
+#define MINMAX
 
 class LightChart : public QChartView
 {
@@ -49,8 +57,13 @@ protected slots:
 
 private:
     ILightFilter* m_filter;
-    //绘图定时器
+#ifdef Q_OS_ANDROID
     QLightSensor* m_lightSensor;
+#else
+    QTimer* m_readTimer;
+    FileReader* m_fileReader;
+#endif
+
     QTime m_curTime;
     QTime m_lastTime;
 
@@ -76,6 +89,11 @@ private:
     QSplineSeries* stableline;
     QScatterSeries*  m_stableXYSeries;
     int stablize(int);
+
+#ifdef MINMAX
+    QSplineSeries* minline;
+    QSplineSeries* maxline;
+#endif
 
 #ifdef MA
     ILightFilter* m_filter2;

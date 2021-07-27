@@ -12,6 +12,7 @@
 #include "lightfilter.h"
 #include "movefilter.h"
 #include "dynamiclightfilter.h"
+#include "hysteresisminmax.h"
 
 class mainWidget : public QWidget
 {

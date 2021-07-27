@@ -11,36 +11,53 @@ LightChart::LightChart(QWidget *parent)
     m_lastDelta = 0;
     m_lastStable -1;
 
+    setupChart();
+
+#ifdef Q_OS_ANDROID
     m_lightSensor = new QLightSensor(this);
     connect(m_lightSensor, SIGNAL(readingChanged()), this, SLOT(onDataReach()));
     m_lightSensor->setAlwaysOn(true);
     m_lightSensor->setActive(true);
 
-    setupChart();
-
-
     m_lightSensor->start();
-
+#else
+    m_fileReader = new FileReader("C:\\codes\\AmbientLightLab\\recordWin.txt");
+    m_readTimer = new QTimer(this);
+    connect(m_readTimer, SIGNAL(timeout()), this, SLOT(onDataReach()));
+    if(m_fileReader->hasData())
+        m_readTimer->start(200);
+    else
+        qDebug()<<"read file failed!";
+#endif
 }
 
 LightChart::~LightChart()
 {
     delete m_filter;
+#ifdef MA
+    delete m_filter2;
+#endif
 }
 
 void LightChart::setupChart()
 {
+#ifdef Q_OS_ANDROID
+    int width = 5;
+#else
+    int width = 2;
+#endif
+
     line = new QSplineSeries(this);
     line->setName("lux");//设置曲线名称
     QPen linePen(QColor(255, 0, 0));
-    linePen.setWidth(5);
+    linePen.setWidth(width);
     line->setPen(linePen);//设置曲线颜色
     line->setUseOpenGL(true);//openGl 加速
     m_xySeries = new QScatterSeries();
     m_xySeries->setMarkerShape(QScatterSeries::MarkerShapeCircle);
     m_xySeries->setMarkerSize(3);
     QPen xyPen(QColor(0, 0, 255));
-    xyPen.setWidth(5);
+    xyPen.setWidth(width);
     m_xySeries->setBrush(QBrush(QColor(0,0,255)));
     m_xySeries->setPen(xyPen);
 
@@ -48,28 +65,38 @@ void LightChart::setupChart()
     stableline = new QSplineSeries(this);
     stableline->setName("stable lux");//设置曲线名称
     QPen linePen2(QColor(180, 250, 180));
-    linePen2.setWidth(5);
+    linePen2.setWidth(width);
     stableline->setPen(linePen2);//设置曲线颜色
     stableline->setUseOpenGL(true);//openGl 加速
     m_stableXYSeries = new QScatterSeries();
     m_stableXYSeries->setMarkerShape(QScatterSeries::MarkerShapeCircle);
     m_stableXYSeries->setMarkerSize(3);
     QPen xyPen2(QColor(50, 200, 30));
-    xyPen2.setWidth(5);
+    xyPen2.setWidth(width);
     m_stableXYSeries->setBrush(QBrush(QColor(50, 200, 30)));
     m_stableXYSeries->setPen(xyPen2);
+
+#ifdef MINMAX
+    minline = new QSplineSeries(this);
+    minline->setPen(QPen(QColor(80,80,80)));//设置曲线颜色
+    minline->setUseOpenGL(true);
+    maxline = new QSplineSeries(this);
+    maxline->setPen(QPen(QColor(80,80,80)));//设置曲线颜色
+    maxline->setUseOpenGL(true);
+#endif
+
 #ifdef MA
     stableline2 = new QSplineSeries(this);
     stableline2->setName("MA");//设置曲线名称
     QPen linePen3(QColor(250, 150, 50));
-    linePen3.setWidth(5);
+    linePen3.setWidth(width);
     stableline2->setPen(linePen3);//设置曲线颜色
     stableline2->setUseOpenGL(true);//openGl 加速
     m_stableXYSeries2 = new QScatterSeries();
     m_stableXYSeries2->setMarkerShape(QScatterSeries::MarkerShapeCircle);
     m_stableXYSeries2->setMarkerSize(3);
     QPen xyPen3(QColor(250, 150, 150));
-    xyPen3.setWidth(5);
+    xyPen3.setWidth(width);
     m_stableXYSeries2->setBrush(QBrush(QColor(250, 150, 150)));
     m_stableXYSeries2->setPen(xyPen3);
 #endif
@@ -84,7 +111,6 @@ void LightChart::setupChart()
     axisX->setRange(0,line_max);//范围
     axisY = new QValueAxis(this);
     axisY->setRange(0,1000);
-
 
     chart->setTitle("light Data");//设置图标标题
     chart->createDefaultAxes();//设置坐标轴
@@ -105,6 +131,14 @@ void LightChart::setupChart()
     chart->setAxisX(axisX,m_stableXYSeries2);
     chart->setAxisY(axisY,m_stableXYSeries2);
 #endif
+#ifdef MINMAX
+    chart->addSeries(minline);
+    chart->addSeries(maxline);
+    chart->setAxisX(axisX,minline);
+    chart->setAxisY(axisY,minline);
+    chart->setAxisX(axisX,maxline);
+    chart->setAxisY(axisY,maxline);
+#endif
 
     axisX->setRange(0,line_max);//范围   5个*20秒
     axisX->setTitleText("times");//标题
@@ -118,13 +152,33 @@ void LightChart::setupChart()
 
 bool mycheck(QPointF i,QPointF j) { return i.y()<j.y(); }
 
+
 void LightChart::onDataReach()
 {
+#ifdef Q_OS_ANDROID
     QLightReading* reading = m_lightSensor->reading();
     int lux = reading->lux();
+#else
+    if(m_fileReader->finished())
+    {
+        m_fileReader->reset();
+        line->clear();
+        m_xySeries->clear();
+        stableline->clear();
+        m_stableXYSeries->clear();
+        stableline2->clear();
+        m_stableXYSeries2->clear();
+        m_allLux.clear();
+#ifdef MINMAX
+        minline->clear();
+        maxline->clear();
+#endif
+    }
+    int lux = m_fileReader->getLux();
+#endif
+
     m_allLux.enqueue(lux);
     while(m_allLux.count() > 10000) m_allLux.dequeue();
-
 
 
     //    if(!m_curTime.isValid())
@@ -168,7 +222,8 @@ void LightChart::onDataReach()
 
     int res = stablize(lux);
 #ifdef MA
-    stablize2(lux);
+    if(m_filter2)
+        stablize2(lux);
 #endif
 
     int delta  = 0;
@@ -195,9 +250,40 @@ void LightChart::onDataReach()
     chart->setTitle(chart->title() + "--" + m_appendTitle);
 }
 
+
 int LightChart::stablize(int lux)
 {
+    if(!m_filter) return -1;
+
     static int moveNum = 0;
+
+
+#ifdef MINMAX
+    if(m_filter->m_methodName == "HysteresisMinMax")
+    {
+        HysteresisMinMax* filter = dynamic_cast<HysteresisMinMax*> (m_filter);
+        if(filter)
+        {
+            int minV = 0, maxV = 0;
+            bool hasPrevious = filter->getPrevisousMinMax(lux, minV, maxV);
+            qDebug()<<"[LightChart] hasPrevious:"<<hasPrevious<<"--minV:"<<minV<<"--maxV:"<<maxV;
+
+            if(hasPrevious)
+            {
+                QVector<QPointF> listMinMax;
+                listMinMax.append(QPointF(0, minV));
+                listMinMax.append(QPointF(line_max, minV));
+                minline->replace(listMinMax);
+                listMinMax.clear();
+                listMinMax.append(QPointF(0, maxV));
+                listMinMax.append(QPointF(line_max, maxV));
+                maxline->replace(listMinMax);
+            }
+        }
+        else
+            qDebug()<<"dynamic_cast to HysteresisMinMax failed!";
+    }
+#endif
 
     // stablize
     lux = m_filter->stableLux(lux);
@@ -237,11 +323,11 @@ int LightChart::stablize(int lux)
         }
 
     }
-//    if(lux == -1) return -1;
+    //    if(lux == -1) return -1;
     if(lux != -1)
     {
         newlist.append(QPointF(line->pointsVector().size(),lux));//最后补上新的数据
-        qDebug()<<"Point:"<<QPointF(line->pointsVector().size(),lux);
+        //        qDebug()<<"Point:"<<QPointF(line->pointsVector().size(),lux);
     }
 
     stableline->replace(newlist);//替换更新
@@ -269,7 +355,7 @@ int LightChart::stablize2(int lux)
     {
         moveNum2++;
         int iReduce = 0;
-        if(moveNum2 > getQueueLimit())
+        if(moveNum2 > getQueueLimit()*2)
         {
             moveNum2 = 0;
             iReduce = 1;
@@ -292,7 +378,7 @@ int LightChart::stablize2(int lux)
         }
 
     }
-//    if(lux == -1) return -1;
+    //    if(lux == -1) return -1;
     if(lux != -1)
     {
         newlist.append(QPointF(line->pointsVector().size(),lux));//最后补上新的数据
@@ -332,7 +418,7 @@ void LightChart::clear()
 
 void LightChart::setMethod(ILightFilter* filter)
 {
-    if(m_filter && filter)
+    if(m_filter)
     {
         delete m_filter;
         m_filter = nullptr;
@@ -346,12 +432,21 @@ void LightChart::setMethod(ILightFilter* filter)
     stableline->clear();
     m_stableXYSeries->clear();
     m_allLux.clear();
+
+#ifdef MINMAX
+    minline->clear();
+    maxline->clear();
+#endif
+
+#ifdef WIN32
+    m_fileReader->reset();
+#endif
 }
 
 #ifdef MA
 void LightChart::setMethodMA(ILightFilter* filter)
 {
-    if(m_filter2 && filter)
+    if(m_filter2)
     {
         delete m_filter2;
         m_filter2 = nullptr;

@@ -2,7 +2,6 @@
 #define dynamicLightFilter_H
 
 #include <QQueue>
-#include "utils.h"
 #include "ilightfilter.h"
 #include "lightchart.h"
 

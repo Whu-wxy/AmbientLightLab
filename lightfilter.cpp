@@ -4,6 +4,8 @@ lightfilter::lightfilter(int numTh)
 {
     m_numTh = numTh;
     m_lastStable = -1;
+    m_methodName = "lightfilter";
+
 }
 
 #include <QDebug>

@@ -5,6 +5,8 @@ dynamicLightFilter::dynamicLightFilter(int numTh)
 {
     m_numTh = numTh;
     m_lastStable = -1;
+    m_methodName = "dynamicLightFilter";
+
 }
 
 int dynamicLightFilter::stableLux(int lux)
@@ -25,7 +27,6 @@ int dynamicLightFilter::stableLux(int lux)
                     .arg((std/(meanVal+1)),0,'g',3).arg(sk,0,'g',3);
             m_pOutChart->appendString(str);
         }
-//        return std;
 
         //        qDebug()<<"stable1: "<<stableLux;
         if(m_lastStable == -1)

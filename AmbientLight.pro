@@ -4,9 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       += core gui charts sensors
+QT       += core gui charts
 android {
-QT += androidextras
+QT += androidextras sensors
 }
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -28,6 +28,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+    filereader.cpp \
+    hysteresisminmax.cpp \
         main.cpp \
     lightfilter.cpp \
     mainwindow.cpp \
@@ -37,13 +39,14 @@ SOURCES += \
     dynamiclightfilter.cpp
 
 HEADERS += \
+    filereader.h \
+    hysteresisminmax.h \
     lightfilter.h \
     mainwindow.h \
     mainwidget.h \
     lightchart.h \
     ilightfilter.h \
     movefilter.h \
-    utils.h \
     dynamiclightfilter.h
 
 CONFIG += mobility
