@@ -10,6 +10,8 @@ LightChart::LightChart(QWidget *parent)
 
     m_lastDelta = 0;
     m_lastStable -1;
+    moveNum = 0;
+    moveNum2 = 0;
 
     setupChart();
 
@@ -255,9 +257,6 @@ int LightChart::stablize(int lux)
 {
     if(!m_filter) return -1;
 
-    static int moveNum = 0;
-
-
 #ifdef MINMAX
     if(m_filter->m_methodName == "HysteresisMinMax")
     {
@@ -299,15 +298,15 @@ int LightChart::stablize(int lux)
     else
     {
         moveNum++;
-        int iReduce = 0;
+        bool bReduce = false;
         if(moveNum > getQueueLimit())
         {
             moveNum = 0;
-            iReduce = 1;
+            bReduce = true;
         }
 
         //错位移动
-        if(iReduce == 0)
+        if(!bReduce)
         {
             for(int i = 0; i< list.size();i++)
             {
@@ -338,8 +337,6 @@ int LightChart::stablize(int lux)
 #ifdef MA
 int LightChart::stablize2(int lux)
 {
-    static int moveNum2 = 0;
-
     // stablize
     lux = m_filter2->stableLux(lux);
 
@@ -353,7 +350,6 @@ int LightChart::stablize2(int lux)
     }
     else
     {
-        moveNum2++;
         int iReduce = 0;
         if(moveNum2 > getQueueLimit()*2)
         {
@@ -382,7 +378,7 @@ int LightChart::stablize2(int lux)
     if(lux != -1)
     {
         newlist.append(QPointF(line->pointsVector().size(),lux));//最后补上新的数据
-        qDebug()<<"Point:"<<QPointF(line->pointsVector().size(),lux);
+//        qDebug()<<"Point:"<<QPointF(line->pointsVector().size(),lux);
     }
 
     stableline2->replace(newlist);//替换更新
@@ -427,6 +423,9 @@ void LightChart::setMethod(ILightFilter* filter)
     m_filter = filter;
 
     m_appendTitle = "";
+    moveNum2 = moveNum = 0;
+    m_lastDelta = 0;
+    m_lastStable -1;
     line->clear();
     m_xySeries->clear();
     stableline->clear();

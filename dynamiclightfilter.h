@@ -41,7 +41,8 @@ class dynamicLightFilter: public ILightFilter
 {
 public:
     dynamicLightFilter(int numTh=4);
-    dynamicLightFilter(LightChart* pChart, int numTh=4) {m_pOutChart = pChart; }
+    dynamicLightFilter(LightChart* pChart, int numTh=4);
+    virtual ~dynamicLightFilter(){}
 
     int stableLux(int);
     double StandardDeviation(QQueue<int> list ){

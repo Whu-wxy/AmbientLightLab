@@ -9,10 +9,19 @@ dynamicLightFilter::dynamicLightFilter(int numTh)
 
 }
 
+dynamicLightFilter::dynamicLightFilter(LightChart* pChart, int numTh)
+{
+    m_pOutChart = pChart;
+    m_numTh = numTh;
+    m_lastStable = -1;
+    m_methodName = "dynamicLightFilter";
+}
+
+
 int dynamicLightFilter::stableLux(int lux)
 {
     m_luxQue.enqueue(lux);
-    if(m_luxQue.size() > m_numTh)
+    if(m_luxQue.size() >= m_numTh)
     {
         double std = log_StandardDeviation(m_luxQue);
         double meanVal = log_mean(m_luxQue);

@@ -12,7 +12,7 @@ HysteresisMinMax::HysteresisMinMax(int numTh)
 int HysteresisMinMax::stableLux(int lux)
 {
     m_luxQue.enqueue(lux);
-    if(m_luxQue.size() > m_numTh)
+    if(m_luxQue.size() >= m_numTh)
     {
         int minV = 0, maxV = 0;
         bool hasPrevious = calPrevisousMinMax(minV, maxV);

@@ -12,7 +12,7 @@ lightfilter::lightfilter(int numTh)
 int lightfilter::stableLux(int lux)
 {
     m_luxQue.enqueue(lux);
-    if(m_luxQue.size() > m_numTh)
+    if(m_luxQue.size() >= m_numTh)
     {
         int stableLux = stablize(m_luxQue);
 

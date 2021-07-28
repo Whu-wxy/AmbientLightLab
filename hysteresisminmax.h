@@ -9,6 +9,8 @@ class HysteresisMinMax : public ILightFilter
 {
 public:
     HysteresisMinMax(int numTh=4);
+    virtual ~HysteresisMinMax(){}
+
     int stableLux(int);
 
     bool getPrevisousMinMax(int lux, int &minV, int &maxV);

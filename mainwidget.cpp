@@ -64,7 +64,7 @@ void mainWidget::onSetQue()
 void mainWidget::onMethod()
 {
     m_method++;
-    if(m_method > 2) m_method = 0;
+    if(m_method > 3) m_method = 0;
 
     ILightFilter* filter = nullptr;
     if(m_method == 0)
@@ -87,19 +87,28 @@ void mainWidget::onMethod()
     }
     else if(m_method == 2)
     {
-//        if(m_queThEdit->text().length() == 0)
-//            filter = new HysteresisMinMax(m_chart->getQueueLimit());
-//        else
-//            filter = new HysteresisMinMax(m_queThEdit->text().toInt());
-//        m_methodBtn->setText("滞后MinMax");
-//        qDebug()<<"onMethod changeto:"<<"HysteresisMinMax";
-
         if(m_queThEdit->text().length() == 0)
-            filter = new dynamicLightFilter(m_chart, m_chart->getQueueLimit());
+            filter = new HysteresisMinMax(m_chart->getQueueLimit());
         else
-            filter = new dynamicLightFilter(m_chart, m_queThEdit->text().toInt());
-        m_methodBtn->setText("滞后exp");
-        qDebug()<<"onMethod changeto:"<<"dynamicLightFilter";
+            filter = new HysteresisMinMax(m_queThEdit->text().toInt());
+        m_methodBtn->setText("滞MinMax");
+        qDebug()<<"onMethod changeto:"<<"HysteresisMinMax";
+
+//        if(m_queThEdit->text().length() == 0)
+//            filter = new dynamicLightFilter(m_chart, m_chart->getQueueLimit());
+//        else
+//            filter = new dynamicLightFilter(m_chart, m_queThEdit->text().toInt());
+//        m_methodBtn->setText("滞后exp");
+//        qDebug()<<"onMethod changeto:"<<"dynamicLightFilter";
+    }
+    else if(m_method == 3)
+    {
+        if(m_queThEdit->text().length() == 0)
+            filter = new HysteresisLogInterval(m_chart, m_chart->getQueueLimit()*2);
+        else
+            filter = new HysteresisLogInterval(m_chart, m_queThEdit->text().toInt()*2);
+        m_methodBtn->setText("滞LogInterval");
+        qDebug()<<"onMethod changeto:"<<"HysteresisLogInterval";
     }
 
     m_chart->setMethod(filter);
@@ -126,15 +135,22 @@ void mainWidget::onMethodMA()
     }
     else if(m_method == 2)
     {
-//        if(m_queThEdit->text().length() == 0)
-//            filter = new HysteresisMinMax(m_chart->getQueueLimit()*2);
-//        else
-//            filter = new HysteresisMinMax(m_queThEdit->text().toInt()*2);
-
         if(m_queThEdit->text().length() == 0)
-            filter = new dynamicLightFilter(m_chart, m_chart->getQueueLimit());
+            filter = new HysteresisMinMax(m_chart->getQueueLimit()*2);
         else
-            filter = new dynamicLightFilter(m_chart, m_queThEdit->text().toInt());
+            filter = new HysteresisMinMax(m_queThEdit->text().toInt()*2);
+
+//        if(m_queThEdit->text().length() == 0)
+//            filter = new dynamicLightFilter(m_chart, m_chart->getQueueLimit()*2);
+//        else
+//            filter = new dynamicLightFilter(m_chart, m_queThEdit->text().toInt()*2);
+    }
+    else if(m_method == 3)
+    {
+//        if(m_queThEdit->text().length() == 0)
+//            filter = new HysteresisLogInterval(m_chart, m_chart->getQueueLimit()*2);
+//        else
+//            filter = new HysteresisLogInterval(m_chart, m_queThEdit->text().toInt()*2);
     }
 
     m_chart->setMethodMA(filter);

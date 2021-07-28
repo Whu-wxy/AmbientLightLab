@@ -29,6 +29,7 @@ CONFIG += c++11
 
 SOURCES += \
     filereader.cpp \
+    hysteresisloginterval.cpp \
     hysteresisminmax.cpp \
         main.cpp \
     lightfilter.cpp \
@@ -40,6 +41,7 @@ SOURCES += \
 
 HEADERS += \
     filereader.h \
+    hysteresisloginterval.h \
     hysteresisminmax.h \
     lightfilter.h \
     mainwindow.h \

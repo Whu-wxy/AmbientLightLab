@@ -78,7 +78,7 @@ private:
     QString m_appendTitle = "";
     QValueAxis *axisX;
     QValueAxis *axisY;
-
+    int moveNum;
 
     void setupChart();
 
@@ -98,6 +98,7 @@ private:
 #ifdef MA
     ILightFilter* m_filter2;
     int m_lastStable2 = -1;
+    int moveNum2;
     QSplineSeries* stableline2;
     QScatterSeries*  m_stableXYSeries2;
     int stablize2(int);
