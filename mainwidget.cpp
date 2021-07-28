@@ -104,9 +104,9 @@ void mainWidget::onMethod()
     else if(m_method == 3)
     {
         if(m_queThEdit->text().length() == 0)
-            filter = new HysteresisLogInterval(m_chart, m_chart->getQueueLimit()*2);
+            filter = new HysteresisLogInterval(m_chart, m_chart->getQueueLimit());
         else
-            filter = new HysteresisLogInterval(m_chart, m_queThEdit->text().toInt()*2);
+            filter = new HysteresisLogInterval(m_chart, m_queThEdit->text().toInt());
         m_methodBtn->setText("滞LogInterval");
         qDebug()<<"onMethod changeto:"<<"HysteresisLogInterval";
     }
