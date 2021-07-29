@@ -14,7 +14,9 @@ public:
     int stableLux(int);
 
     bool getPrevisousMinMax(int lux, int &minV, int &maxV);
-
+    virtual void reset() {m_previousQue.clear();
+                         m_luxQue.clear();
+                         m_lastStable = -1;}
 private:
     QQueue<int> m_luxQue;
     QQueue<int> m_previousQue;

@@ -10,6 +10,7 @@
 #include "ilightfilter.h"
 #include "lightfilter.h"
 #include "hysteresisminmax.h"
+#include "dynamiclightfilter.h"
 
 #include <QDialog>
 #include <QTime>
@@ -42,7 +43,7 @@ public:
     void clear();
     void setQueueLimit(int num) {m_filter->setQueueLimit(num);
                                     #ifdef MA
-                                    m_filter->setQueueLimit(num*2);
+                                    m_filter2->setQueueLimit(num*2);
                                     #endif
                                     }
     int getQueueLimit() {return m_filter->getQueueLimit();}
@@ -71,7 +72,7 @@ private:
     QSplineSeries* line;
     QScatterSeries*  m_xySeries;
     //曲线点的最大数量
-    int line_max = 100;
+    int line_max;
 
     //绘图变量和坐标
     QChart* chart;
@@ -93,6 +94,8 @@ private:
 #ifdef MINMAX
     QSplineSeries* minline;
     QSplineSeries* maxline;
+    QSplineSeries* minline2;
+    QSplineSeries* maxline2;
 #endif
 
 #ifdef MA

@@ -13,7 +13,7 @@ movefilter::movefilter(int numTh)
 
 int movefilter::stableLux(int lux)
 {
-    m_luxQue.push(lux);
+    m_luxQue.enqueue(lux);
     if(m_luxQue.size() >= m_numTh)
     {
         int stableLux = stablize(m_luxQue);
@@ -36,16 +36,16 @@ int movefilter::stableLux(int lux)
 }
 
 
-int movefilter::stablize(queue<int>& que)
+int movefilter::stablize(QQueue<int>& que)
 {
     int mean = 0;
     int count = 0;
     while(!que.empty())
     {
-        int lux = que.front();
+        int lux = que.head();
         mean += lux;
         count++;
-        que.pop();
+        que.dequeue();
     }
 
     mean /= count;

@@ -13,11 +13,12 @@ public:
     lightfilter(int numTh=4);
 
     int stableLux(int);
-
+    virtual void reset() {
+                         m_luxQue.clear();
+                         m_lastStable = -1; }
 private:
     QQueue<int> m_luxQue;
     int m_lastStable = -1;
-
 
     int stablize(QQueue<int>& que);
     int filt(int, int);

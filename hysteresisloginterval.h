@@ -29,6 +29,11 @@ public:
         return sigma;
     }
 
+    virtual void reset() {
+                         m_luxQue.clear();
+                         m_lastStable = -1;
+                         lastMean = -1;}
+
 private:
     QQueue<int> m_luxQue;
     int m_lastStable = -1;

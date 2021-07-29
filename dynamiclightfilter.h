@@ -2,17 +2,20 @@
 #define dynamicLightFilter_H
 
 #include <QQueue>
+#include <QtMath>
 #include "ilightfilter.h"
-#include "lightchart.h"
+#include "math.h"
+#include "vector"
+#include "algorithm"
 
 using namespace std;
+class LightChart;
 
 template <typename T>
 double stats_skewness(T data[], int n)
 {
     if (n <= 0)
     {
-        std::cerr << "wrong parameter!" << std::endl;
         return -1;
     }
 
@@ -40,8 +43,8 @@ double stats_skewness(T data[], int n)
 class dynamicLightFilter: public ILightFilter
 {
 public:
-    dynamicLightFilter(int numTh=4);
-    dynamicLightFilter(LightChart* pChart, int numTh=4);
+    dynamicLightFilter(int numTh=4, int stableMethod=0);
+    dynamicLightFilter(LightChart* pChart, int numTh=4, int stableMethod=0);
     virtual ~dynamicLightFilter(){}
 
     int stableLux(int);
@@ -81,10 +84,9 @@ public:
         int n = list.count();
         double sigma = 0;
         for (int i = 0; i < n; ++i) {
-            int v = list.at(i);
-            sigma += v;        // sum
+            sigma += list.at(i);        // sum
         }
-        sigma /= list.count ();          // 获得平均值
+        sigma /= n;          // 获得平均值
         return sigma;
     }
 
@@ -106,7 +108,6 @@ public:
         int n = data.count();
         if (n <= 0)
         {
-            std::cerr << "skewness wrong parameter!" << std::endl;
             return 0;
         }
 
@@ -129,14 +130,28 @@ public:
         return skewness;
     }
 
+    virtual void reset() {m_alpha = 0.7;
+                         m_luxQue.clear();
+                         m_lastStable = -1;}
+    double WeightedMean(QQueue<int>& que);  //时序加权平均
+    double RMS(QQueue<int>& que);   //均方根
+    double Median(QQueue<int>& que);   //中位数
+    void quartile(QQueue<int>& que, double& up, double& down);   //四分位数
+
+    void getMinMax(int cur, int &minV, int &maxV, int &minV2, int &maxV2);
+
 private:
     QQueue<int> m_luxQue;
     int m_lastStable = -1;
+    double m_alpha;
+    int m_stableMethod;
     LightChart* m_pOutChart = nullptr;
+    double m_smallFactor;
+    double m_largeFactor;
 
-
-    int stablize(QQueue<int>& que);
+    double stablize(QQueue<int>& que);
     int filt(int, int);
+    void calNewAlpha(double cur);
 
 };
 

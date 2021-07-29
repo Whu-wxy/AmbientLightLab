@@ -106,5 +106,5 @@ int HysteresisMinMax::stablize(QQueue<int>& que)
 
 int HysteresisMinMax::filt(int stableLux, int newLux)
 {
-    return stableLux * 0.2 + newLux * 0.8;
+    return stableLux * 0.3 + newLux * 0.7;
 }

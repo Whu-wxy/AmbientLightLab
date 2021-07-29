@@ -64,7 +64,7 @@ void mainWidget::onSetQue()
 void mainWidget::onMethod()
 {
     m_method++;
-    if(m_method > 3) m_method = 0;
+    if(m_method > 4) m_method = 0;
 
     ILightFilter* filter = nullptr;
     if(m_method == 0)
@@ -94,12 +94,6 @@ void mainWidget::onMethod()
         m_methodBtn->setText("滞MinMax");
         qDebug()<<"onMethod changeto:"<<"HysteresisMinMax";
 
-//        if(m_queThEdit->text().length() == 0)
-//            filter = new dynamicLightFilter(m_chart, m_chart->getQueueLimit());
-//        else
-//            filter = new dynamicLightFilter(m_chart, m_queThEdit->text().toInt());
-//        m_methodBtn->setText("滞后exp");
-//        qDebug()<<"onMethod changeto:"<<"dynamicLightFilter";
     }
     else if(m_method == 3)
     {
@@ -109,6 +103,15 @@ void mainWidget::onMethod()
             filter = new HysteresisLogInterval(m_chart, m_queThEdit->text().toInt());
         m_methodBtn->setText("滞LogInterval");
         qDebug()<<"onMethod changeto:"<<"HysteresisLogInterval";
+    }
+    else if(m_method == 4)
+    {
+        if(m_queThEdit->text().length() == 0)
+            filter = new dynamicLightFilter(m_chart, m_chart->getQueueLimit(), 0);
+        else
+            filter = new dynamicLightFilter(m_chart, m_queThEdit->text().toInt(), 0);
+        m_methodBtn->setText("滞后ALPHA");
+        qDebug()<<"onMethod changeto:"<<"dynamicLightFilter--滞后ALPHA";
     }
 
     m_chart->setMethod(filter);
@@ -151,6 +154,25 @@ void mainWidget::onMethodMA()
 //            filter = new HysteresisLogInterval(m_chart, m_chart->getQueueLimit()*2);
 //        else
 //            filter = new HysteresisLogInterval(m_chart, m_queThEdit->text().toInt()*2);
+    }
+    else if(m_method == 4)
+    {
+//        if(m_queThEdit->text().length() == 0)
+//            filter = new dynamicLightFilter(m_chart, m_chart->getQueueLimit()*2);
+//        else
+//            filter = new dynamicLightFilter(m_chart, m_queThEdit->text().toInt()*2);
+
+        if(m_queThEdit->text().length() == 0)
+            filter = new dynamicLightFilter(m_chart, m_chart->getQueueLimit(), 1);
+        else
+            filter = new dynamicLightFilter(m_chart, m_queThEdit->text().toInt(), 1);
+        qDebug()<<"dynamicLightFilter compare to:"<<"dynamicLightFilter weight mean";
+
+//        if(m_queThEdit->text().length() == 0)
+//            filter = new lightfilter(m_chart->getQueueLimit());
+//        else
+//            filter = new lightfilter(m_queThEdit->text().toInt());
+//        qDebug()<<"dynamicLightFilter compare to:"<<"lightfilter";
     }
 
     m_chart->setMethodMA(filter);

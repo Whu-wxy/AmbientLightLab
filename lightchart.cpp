@@ -12,6 +12,7 @@ LightChart::LightChart(QWidget *parent)
     m_lastStable -1;
     moveNum = 0;
     moveNum2 = 0;
+    line_max = 100;
 
     setupChart();
 
@@ -80,11 +81,17 @@ void LightChart::setupChart()
 
 #ifdef MINMAX
     minline = new QSplineSeries(this);
-    minline->setPen(QPen(QColor(80,80,80)));//设置曲线颜色
+    minline->setPen(QPen(QColor(150,150,150)));//设置曲线颜色
     minline->setUseOpenGL(true);
     maxline = new QSplineSeries(this);
-    maxline->setPen(QPen(QColor(80,80,80)));//设置曲线颜色
+    maxline->setPen(QPen(QColor(150,150,150)));//设置曲线颜色
     maxline->setUseOpenGL(true);
+    minline2 = new QSplineSeries(this);
+    minline2->setPen(QPen(QColor(40,40,40)));//设置曲线颜色
+    minline2->setUseOpenGL(true);
+    maxline2 = new QSplineSeries(this);
+    maxline2->setPen(QPen(QColor(40,40,40)));//设置曲线颜色
+    maxline2->setUseOpenGL(true);
 #endif
 
 #ifdef MA
@@ -140,6 +147,12 @@ void LightChart::setupChart()
     chart->setAxisY(axisY,minline);
     chart->setAxisX(axisX,maxline);
     chart->setAxisY(axisY,maxline);
+    chart->addSeries(minline2);
+    chart->addSeries(maxline2);
+    chart->setAxisX(axisX,minline2);
+    chart->setAxisY(axisY,minline2);
+    chart->setAxisX(axisX,maxline2);
+    chart->setAxisY(axisY,maxline2);
 #endif
 
     axisX->setRange(0,line_max);//范围   5个*20秒
@@ -171,9 +184,13 @@ void LightChart::onDataReach()
         stableline2->clear();
         m_stableXYSeries2->clear();
         m_allLux.clear();
+        m_filter->reset();
+        m_filter2->reset();
 #ifdef MINMAX
         minline->clear();
         maxline->clear();
+        minline2->clear();
+        maxline2->clear();
 #endif
     }
     int lux = m_fileReader->getLux();
@@ -329,6 +346,36 @@ int LightChart::stablize(int lux)
         //        qDebug()<<"Point:"<<QPointF(line->pointsVector().size(),lux);
     }
 
+#ifdef MINMAX
+    if(m_filter->m_methodName == "dynamicLightFilter")
+    {
+        dynamicLightFilter* filter = dynamic_cast<dynamicLightFilter*> (m_filter);
+        if(filter && lux != -1)
+        {
+            int minV = 0, maxV = 0, minV2 = 0, maxV2 = 0;
+            filter->getMinMax(lux, minV, maxV, minV2, maxV2);
+//            qDebug()<<"[LightChart] hasPrevious:"<<hasPrevious<<"--minV:"<<minV<<"--maxV:"<<maxV;
+
+            QVector<QPointF> listMinMax;
+            listMinMax.append(QPointF(0, minV));
+            listMinMax.append(QPointF(line_max, minV));
+            minline->replace(listMinMax);
+            listMinMax.clear();
+            listMinMax.append(QPointF(0, maxV));
+            listMinMax.append(QPointF(line_max, maxV));
+            maxline->replace(listMinMax);
+            listMinMax.clear();
+            listMinMax.append(QPointF(0, minV2));
+            listMinMax.append(QPointF(line_max, minV2));
+            minline2->replace(listMinMax);
+            listMinMax.clear();
+            listMinMax.append(QPointF(0, maxV2));
+            listMinMax.append(QPointF(line_max, maxV2));
+            maxline2->replace(listMinMax);
+        }
+    }
+#endif
+
     stableline->replace(newlist);//替换更新
     m_stableXYSeries->replace(newlist);
     return lux;
@@ -435,6 +482,8 @@ void LightChart::setMethod(ILightFilter* filter)
 #ifdef MINMAX
     minline->clear();
     maxline->clear();
+    minline2->clear();
+    maxline2->clear();
 #endif
 
 #ifdef WIN32
