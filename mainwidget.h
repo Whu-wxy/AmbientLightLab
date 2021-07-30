@@ -14,6 +14,7 @@
 #include "dynamiclightfilter.h"
 #include "hysteresisminmax.h"
 #include "hysteresisloginterval.h"
+#include "logdynamiclightfilter.h"
 
 class mainWidget : public QWidget
 {

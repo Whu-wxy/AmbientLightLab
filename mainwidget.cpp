@@ -107,7 +107,7 @@ void mainWidget::onMethod()
     else if(m_method == 4)
     {
         if(m_queThEdit->text().length() == 0)
-            filter = new dynamicLightFilter(m_chart, m_chart->getQueueLimit(), 0);
+            filter = new dynamicLightFilter(m_chart, 5, 0);
         else
             filter = new dynamicLightFilter(m_chart, m_queThEdit->text().toInt(), 0);
         m_methodBtn->setText("滞后ALPHA");
@@ -163,9 +163,9 @@ void mainWidget::onMethodMA()
 //            filter = new dynamicLightFilter(m_chart, m_queThEdit->text().toInt()*2);
 
         if(m_queThEdit->text().length() == 0)
-            filter = new dynamicLightFilter(m_chart, m_chart->getQueueLimit(), 1);
+            filter = new dynamicLightFilter(m_chart, 5, 3, false);
         else
-            filter = new dynamicLightFilter(m_chart, m_queThEdit->text().toInt(), 1);
+            filter = new dynamicLightFilter(m_chart, m_queThEdit->text().toInt(), 3, false);
         qDebug()<<"dynamicLightFilter compare to:"<<"dynamicLightFilter weight mean";
 
 //        if(m_queThEdit->text().length() == 0)

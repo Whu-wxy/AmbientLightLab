@@ -2,18 +2,20 @@
 #include <QDebug>
 #include "lightchart.h"
 
-dynamicLightFilter::dynamicLightFilter(int numTh, int stableMethod)
+dynamicLightFilter::dynamicLightFilter(int numTh, int stableMethod, int bLogFilt)
 {
     m_numTh = numTh;
     m_lastStable = -1;
     m_methodName = "dynamicLightFilter";
     m_alpha = 0.7;
     m_stableMethod = stableMethod;
-    m_smallFactor = 0.07;
+    m_smallFactor = 0.05;
     m_largeFactor = 0.15;
+    m_largelargeFactor = 0.3;
+    m_bLogFilt = bLogFilt;
 }
 
-dynamicLightFilter::dynamicLightFilter(LightChart* pChart, int numTh, int stableMethod)
+dynamicLightFilter::dynamicLightFilter(LightChart* pChart, int numTh, int stableMethod, int bLogFilt)
 {
     m_pOutChart = pChart;
     m_numTh = numTh;
@@ -21,8 +23,10 @@ dynamicLightFilter::dynamicLightFilter(LightChart* pChart, int numTh, int stable
     m_methodName = "dynamicLightFilter";
     m_alpha = 0.7;
     m_stableMethod = stableMethod;
-    m_smallFactor = 0.07;
+    m_smallFactor = 0.05;
     m_largeFactor = 0.15;
+    m_largelargeFactor = 0.3;
+    m_bLogFilt = bLogFilt;
 }
 
 
@@ -41,6 +45,8 @@ int dynamicLightFilter::stableLux(int lux)
             stableLux = RMS(m_luxQue);
         else if(m_stableMethod == 3)
             stableLux = Median(m_luxQue);
+        else if(m_stableMethod == 4)
+            stableLux = medianMean(m_luxQue);
 
 //        double sk = skewness(m_luxQue);
 //        int stableLux = stablize(m_luxQue);
@@ -90,6 +96,8 @@ double dynamicLightFilter::stablize(QQueue<int>& que)
     }
 
     mean /= count;
+    qDebug()<<"stablize: "<<mean;
+
     return mean;
 }
 
@@ -176,6 +184,29 @@ void dynamicLightFilter::quartile(QQueue<int>& que, double& up, double& down)
     }
 }
 
+double dynamicLightFilter::medianMean(QQueue<int>& que)
+{
+    QVector<int> vec = que.toVector();
+    que.clear();
+    sort(vec.begin(), vec.end());
+
+    int start = 0, end = vec.count();
+    if(vec.count() > 2)
+    {
+        start = 1;
+        end = vec.count()-1;
+    }
+
+    double meanVal = 0.0;
+    for(int i=start; i<end; i++)
+    {
+        meanVal += vec.at(i);
+    }
+    meanVal = meanVal / (end-start);
+    qDebug()<<"medianMean: "<<meanVal;
+    return meanVal;
+}
+
 void dynamicLightFilter::getMinMax(int cur, int &minV, int &maxV, int &minV2, int &maxV2)
 {
     double log_cur = log(cur+1);
@@ -191,25 +222,38 @@ void dynamicLightFilter::getMinMax(int cur, int &minV, int &maxV, int &minV2, in
 
 int dynamicLightFilter::filt(int stableLux, int newLux)
 {
-    return static_cast<int>(stableLux * m_alpha + newLux * (1-m_alpha));
+    if(m_bLogFilt)
+        return static_cast<int>(exp(log(stableLux+1) * m_alpha + log(newLux+1) * (1-m_alpha)));
+    else
+        return static_cast<int>(stableLux * m_alpha + newLux * (1-m_alpha));
 }
 
 void dynamicLightFilter::calNewAlpha(double cur)
 {
     double logCur = log(cur+1);
     double log_last = log(m_lastStable+1);
-//    double last_max = std::max(0.0, log_last*1.1);
-//    double last_min = std::max(log(10), log_last*0.9);
-//    double last_larger_max = std::max(0.0, log_last*1.15);
-//    double last_lower_min = std::max(log(10), log_last*0.85);
     double last_max = std::max(log(5.0), log_last*(1+m_smallFactor));
     double last_min = std::max(0.0, log_last*(1-m_smallFactor));
     double last_larger_max = std::max(log(10.0), log_last*(1+m_largeFactor));
     double last_lower_min = std::max(0.0, log_last*(1-m_largeFactor));
-    qDebug()<<std::exp(last_lower_min)<<"--"<<std::exp(last_min)<<"--"<<cur<<"--"<<std::exp(last_max)<<"--"<<std::exp(last_larger_max);
+    double last_largerlarger_max = std::max(log(10.0), log_last*(1+m_largelargeFactor));
+    double last_lowerlower_min = std::max(0.0, log_last*(1-m_largelargeFactor));
+//    qDebug()<<std::exp(last_lower_min)<<"--"<<std::exp(last_min)<<"--"<<cur<<"--"<<std::exp(last_max)<<"--"<<std::exp(last_larger_max);
 
-    if(logCur < last_lower_min || logCur > last_larger_max) m_alpha = 0;
-    else if(logCur <= last_max && logCur >= last_min) m_alpha = 1;
-    else if(logCur > last_max && logCur <= last_larger_max) m_alpha = 0.5*(logCur-last_larger_max)/(last_max-last_larger_max);
-    else if(logCur < last_min && logCur >= last_lower_min) m_alpha = 0.5*(logCur-last_lower_min)/(last_min-last_lower_min);
+//    double a1 = 0.5, a2 = 0, a3 = 0.8;
+    double a1 = 0, a2 = 0.7, a3 = 0.8;
+
+    if(logCur < last_lower_min || logCur > last_larger_max) m_alpha = 0; // 超过最大
+    else if(logCur <= last_max && logCur >= last_min) m_alpha = 1;   // 小范围
+    else if(logCur > last_max && logCur <= last_larger_max) m_alpha = (a1-a2)*(logCur-last_larger_max)/(last_max-last_larger_max)+a2;//上中范围
+    else if(logCur < last_min && logCur >= last_lower_min) m_alpha = (a1-a2)*(logCur-last_lower_min)/(last_min-last_lower_min)+a2; //下中范围
+
+
+//    if(logCur <= last_max && logCur >= last_min) m_alpha = 1;   // 小范围
+//    else if(logCur > last_max && logCur <= last_larger_max) m_alpha = (a1-a2)*(logCur-last_larger_max)/(last_max-last_larger_max)+a2; //上中范围
+//    else if(logCur < last_min && logCur >= last_lower_min) m_alpha = (a1-a2)*(logCur-last_lower_min)/(last_min-last_lower_min)+a2; //下中范围
+//    if(logCur < last_lowerlower_min || logCur > last_largerlarger_max) m_alpha = a3; // 超过最大
+//    else if(logCur > last_larger_max && logCur <= last_largerlarger_max) m_alpha = (a3-a2)*(logCur-last_max)/(last_largerlarger_max-last_larger_max)+a2;
+//    else if(logCur < last_lower_min && logCur >= last_lowerlower_min) m_alpha = (a3-a2)*(logCur-last_lower_min)/(last_lowerlower_min-last_lower_min)+a2;
+
 }

@@ -43,8 +43,8 @@ double stats_skewness(T data[], int n)
 class dynamicLightFilter: public ILightFilter
 {
 public:
-    dynamicLightFilter(int numTh=4, int stableMethod=0);
-    dynamicLightFilter(LightChart* pChart, int numTh=4, int stableMethod=0);
+    dynamicLightFilter(int numTh=4, int stableMethod=0, int bLogFilt=false);
+    dynamicLightFilter(LightChart* pChart, int numTh=4, int stableMethod=0, int bLogFilt=false);
     virtual ~dynamicLightFilter(){}
 
     int stableLux(int);
@@ -137,6 +137,7 @@ public:
     double RMS(QQueue<int>& que);   //均方根
     double Median(QQueue<int>& que);   //中位数
     void quartile(QQueue<int>& que, double& up, double& down);   //四分位数
+    double medianMean(QQueue<int>& que);
 
     void getMinMax(int cur, int &minV, int &maxV, int &minV2, int &maxV2);
 
@@ -148,6 +149,8 @@ private:
     LightChart* m_pOutChart = nullptr;
     double m_smallFactor;
     double m_largeFactor;
+    double m_largelargeFactor;
+    bool m_bLogFilt;
 
     double stablize(QQueue<int>& que);
     int filt(int, int);

@@ -11,6 +11,7 @@
 #include "lightfilter.h"
 #include "hysteresisminmax.h"
 #include "dynamiclightfilter.h"
+#include "logdynamiclightfilter.h"
 
 #include <QDialog>
 #include <QTime>

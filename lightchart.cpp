@@ -119,7 +119,7 @@ void LightChart::setupChart()
     axisX = new QValueAxis(this);
     axisX->setRange(0,line_max);//范围
     axisY = new QValueAxis(this);
-    axisY->setRange(0,1000);
+    axisY->setRange(-20,1000);
 
     chart->setTitle("light Data");//设置图标标题
     chart->createDefaultAxes();//设置坐标轴

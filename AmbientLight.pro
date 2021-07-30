@@ -31,6 +31,7 @@ SOURCES += \
     filereader.cpp \
     hysteresisloginterval.cpp \
     hysteresisminmax.cpp \
+    logdynamiclightfilter.cpp \
         main.cpp \
     lightfilter.cpp \
     mainwindow.cpp \
@@ -44,6 +45,7 @@ HEADERS += \
     hysteresisloginterval.h \
     hysteresisminmax.h \
     lightfilter.h \
+    logdynamiclightfilter.h \
     mainwindow.h \
     mainwidget.h \
     lightchart.h \
