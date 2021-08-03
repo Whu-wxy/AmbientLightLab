@@ -130,7 +130,7 @@ def checkOneSide(lux, stableLux, last):
 
 
 def calRMSStable(lux_list):
-    RMS = math.sqrt(np.sum(np.array(lux_list)**2) / len(lux_list)) 
+    RMS = math.sqrt(np.sum(np.array(lux_list)**2, dtype=float) / len(lux_list)) 
     return RMS
 
 
@@ -225,8 +225,8 @@ def stableBySection(curLux, lastStable, need_small):
         big_right = lastStable * 2.0 + 636.25
     big_right = max(5, big_right)
 
-    big_left = min(8600, big_left)
-    big_right = min(8600, big_right)
+    # big_left = min(8600, big_left)
+    # big_right = min(8600, big_right)
 
     if need_small:
         ### small
@@ -254,8 +254,8 @@ if __name__ == '__main__':
     # 1,2,3,4,5,6,6,6,7,5,7,5,7,5,7,5
 
     lux_list = [50,51,51,52,50,51,51,52,80,130,150,170,200,200,201,202,210,200,200,201,202,210,200,200,201,202,210,200,200,201,202]    
-    lux_list = readFromRecord('record2.txt') 
-    stable_list, stable_idx = AIBrightness(lux_list, need_small=False, always_usd_std=False)
+    lux_list = readFromRecord('record5.txt') 
+    stable_list, stable_idx = AIBrightness(lux_list, need_small=True, always_usd_std=False)
     print("\norigin:", lux_list)
     print("stable:", stable_list)
     print("stable idx:", stable_idx)
