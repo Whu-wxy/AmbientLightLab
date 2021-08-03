@@ -138,6 +138,7 @@ public:
     double Median(QQueue<int>& que);   //中位数
     void quartile(QQueue<int>& que, double& up, double& down);   //四分位数
     double medianMean(QQueue<int>& que);
+    double calLogistic(double deltaLux, double a2);
 
     void getMinMax(int cur, int &minV, int &maxV, int &minV2, int &maxV2);
 

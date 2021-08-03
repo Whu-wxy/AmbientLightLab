@@ -1,4 +1,5 @@
 #include "mainwidget.h"
+#include <androidsetup.h>
 
 mainWidget::mainWidget(QWidget *parent) : QWidget(parent)
 {
@@ -10,6 +11,7 @@ mainWidget::mainWidget(QWidget *parent) : QWidget(parent)
     m_dataEdit = new QLineEdit;
     m_dataEdit->setMaxLength(9999999);
     m_exportBtn = new QPushButton("导出");
+    m_export2Btn = new QPushButton("到文件");
     m_clearBtn = new QPushButton("清除");
     m_methodBtn = new QPushButton("滞后");
     m_method = 0;
@@ -21,6 +23,7 @@ mainWidget::mainWidget(QWidget *parent) : QWidget(parent)
 
     vlay->addWidget(m_dataEdit);
     vlay->addWidget(m_exportBtn);
+    vlay->addWidget(m_export2Btn);
     vlay->addWidget(m_clearBtn);
     vlay->addStretch();
     vlay->addWidget(m_methodBtn);
@@ -33,6 +36,7 @@ mainWidget::mainWidget(QWidget *parent) : QWidget(parent)
 
 
     connect(m_exportBtn, SIGNAL(clicked()), this, SLOT(onExport()));
+    connect(m_export2Btn, SIGNAL(clicked()), this, SLOT(onExportToFile()));
     connect(m_clearBtn, SIGNAL(clicked()), this, SLOT(onClear()));
     connect(m_methodBtn, SIGNAL(clicked()), this, SLOT(onMethod()));
 
@@ -44,6 +48,15 @@ void mainWidget::onExport()
 {
     QString res = m_chart->exportData();
     m_dataEdit->setText(res);
+}
+
+void mainWidget::onExportToFile()
+{
+#ifdef Q_OS_ANDROID
+    AndroidSetup setup;
+    QString dataDir = setup.getAppDataDir();
+    m_chart->exportToFile(dataDir + "record.txt");
+#endif
 }
 
 void mainWidget::onClear()
@@ -107,9 +120,9 @@ void mainWidget::onMethod()
     else if(m_method == 4)
     {
         if(m_queThEdit->text().length() == 0)
-            filter = new dynamicLightFilter(m_chart, 5, 0);
+            filter = new dynamicLightFilter(m_chart, 5, 3);
         else
-            filter = new dynamicLightFilter(m_chart, m_queThEdit->text().toInt(), 0);
+            filter = new dynamicLightFilter(m_chart, m_queThEdit->text().toInt(), 3);
         m_methodBtn->setText("滞后ALPHA");
         qDebug()<<"onMethod changeto:"<<"dynamicLightFilter--滞后ALPHA";
     }
@@ -162,11 +175,11 @@ void mainWidget::onMethodMA()
 //        else
 //            filter = new dynamicLightFilter(m_chart, m_queThEdit->text().toInt()*2);
 
-        if(m_queThEdit->text().length() == 0)
-            filter = new dynamicLightFilter(m_chart, 5, 3, false);
-        else
-            filter = new dynamicLightFilter(m_chart, m_queThEdit->text().toInt(), 3, false);
-        qDebug()<<"dynamicLightFilter compare to:"<<"dynamicLightFilter weight mean";
+//        if(m_queThEdit->text().length() == 0)
+//            filter = new dynamicLightFilter(m_chart, 5, 3, false);
+//        else
+//            filter = new dynamicLightFilter(m_chart, m_queThEdit->text().toInt(), 3, false);
+//        qDebug()<<"dynamicLightFilter compare to:"<<"dynamicLightFilter weight mean";
 
 //        if(m_queThEdit->text().length() == 0)
 //            filter = new lightfilter(m_chart->getQueueLimit());

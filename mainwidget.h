@@ -26,6 +26,7 @@ private:
     LightChart* m_chart;
     QLineEdit* m_dataEdit;
     QPushButton* m_exportBtn;
+    QPushButton* m_export2Btn;
     QPushButton* m_clearBtn;
     QLineEdit* m_queThEdit;
     QPushButton* m_methodBtn;
@@ -37,6 +38,7 @@ signals:
 
 public slots:
     void onExport();
+    void onExportToFile();
     void onClear();
     void onSetQue();
     void onMethod();

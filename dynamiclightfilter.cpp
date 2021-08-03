@@ -9,8 +9,8 @@ dynamicLightFilter::dynamicLightFilter(int numTh, int stableMethod, int bLogFilt
     m_methodName = "dynamicLightFilter";
     m_alpha = 0.7;
     m_stableMethod = stableMethod;
-    m_smallFactor = 0.05;
-    m_largeFactor = 0.15;
+    m_smallFactor = 0.1;
+    m_largeFactor = 0.25;
     m_largelargeFactor = 0.3;
     m_bLogFilt = bLogFilt;
 }
@@ -23,8 +23,8 @@ dynamicLightFilter::dynamicLightFilter(LightChart* pChart, int numTh, int stable
     m_methodName = "dynamicLightFilter";
     m_alpha = 0.7;
     m_stableMethod = stableMethod;
-    m_smallFactor = 0.05;
-    m_largeFactor = 0.15;
+    m_smallFactor = 0.1;
+    m_largeFactor = 0.25;
     m_largelargeFactor = 0.3;
     m_bLogFilt = bLogFilt;
 }
@@ -228,6 +228,11 @@ int dynamicLightFilter::filt(int stableLux, int newLux)
         return static_cast<int>(stableLux * m_alpha + newLux * (1-m_alpha));
 }
 
+double dynamicLightFilter::calLogistic(double deltaLux, double a2)
+{
+    return a2*exp(0.01*deltaLux) / (1+ 0.7*(exp(0.01*deltaLux)-1));
+}
+
 void dynamicLightFilter::calNewAlpha(double cur)
 {
     double logCur = log(cur+1);
@@ -243,7 +248,9 @@ void dynamicLightFilter::calNewAlpha(double cur)
 //    double a1 = 0.5, a2 = 0, a3 = 0.8;
     double a1 = 0, a2 = 0.7, a3 = 0.8;
 
-    if(logCur < last_lower_min || logCur > last_larger_max) m_alpha = 0; // 超过最大
+//    if(logCur < last_lower_min || logCur > last_larger_max) m_alpha = a2; // 超过最大
+    if(logCur < last_lower_min) m_alpha = calLogistic(exp(logCur-last_lower_min), a2);
+    else if(logCur > last_larger_max ) m_alpha = calLogistic(exp(last_larger_max-logCur), a2);
     else if(logCur <= last_max && logCur >= last_min) m_alpha = 1;   // 小范围
     else if(logCur > last_max && logCur <= last_larger_max) m_alpha = (a1-a2)*(logCur-last_larger_max)/(last_max-last_larger_max)+a2;//上中范围
     else if(logCur < last_min && logCur >= last_lower_min) m_alpha = (a1-a2)*(logCur-last_lower_min)/(last_min-last_lower_min)+a2; //下中范围

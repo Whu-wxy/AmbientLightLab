@@ -41,6 +41,8 @@ public:
     ~LightChart();
 
     QString exportData();
+    void exportToFile(QString path);
+
     void clear();
     void setQueueLimit(int num) {m_filter->setQueueLimit(num);
                                     #ifdef MA

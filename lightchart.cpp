@@ -36,9 +36,11 @@ LightChart::LightChart(QWidget *parent)
 
 LightChart::~LightChart()
 {
-    delete m_filter;
+    if(m_filter)
+        delete m_filter;
 #ifdef MA
-    delete m_filter2;
+    if(m_filter2)
+        delete m_filter2;
 #endif
 }
 
@@ -185,7 +187,8 @@ void LightChart::onDataReach()
         m_stableXYSeries2->clear();
         m_allLux.clear();
         m_filter->reset();
-        m_filter2->reset();
+        if(m_filter2)
+            m_filter2->reset();
 #ifdef MINMAX
         minline->clear();
         maxline->clear();
@@ -440,7 +443,7 @@ QString LightChart::exportData()
     if(m_allLux.empty()) return "";
 
     QString res;
-    for(int j = 0; j<400; j++)
+    for(int j = 0; j<300; j++)
     {
         if(m_allLux.count() == 0) break;
 
@@ -452,6 +455,26 @@ QString LightChart::exportData()
     res.remove(res.count()-1, 1);
 
     return res;
+}
+
+void LightChart::exportToFile(QString path)
+{
+    if(m_allLux.empty()) return;
+
+    QString res;
+    while(m_allLux.count() > 0)
+    {
+        int i = m_allLux.head();
+        res += QString::number(i);
+        res += ",";
+    }
+    res.remove(res.count()-1, 1);
+
+    QFile file(path);
+    if(file.open(QIODevice::WriteOnly))
+    {
+        file.write(res.toLatin1());
+    }
 }
 
 void LightChart::clear()

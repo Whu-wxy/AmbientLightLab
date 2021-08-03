@@ -28,6 +28,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+    androidsetup.cpp \
     filereader.cpp \
     hysteresisloginterval.cpp \
     hysteresisminmax.cpp \
@@ -41,6 +42,7 @@ SOURCES += \
     dynamiclightfilter.cpp
 
 HEADERS += \
+    androidsetup.h \
     filereader.h \
     hysteresisloginterval.h \
     hysteresisminmax.h \
@@ -72,3 +74,7 @@ DISTFILES += \
     android/gradlew.bat
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+
+android {
+LIBS += -landroid
+}
