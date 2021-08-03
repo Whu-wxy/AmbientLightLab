@@ -1,10 +1,10 @@
 #ifndef ANDROIDSETUP_H
 #define ANDROIDSETUP_H
 
-#ifdef Q_OS_ANDROID
 
 #include <QObject>
 #include <QDir>
+#ifdef Q_OS_ANDROID
 
 class AndroidSetup
 {

@@ -9,7 +9,7 @@ dynamicLightFilter::dynamicLightFilter(int numTh, int stableMethod, int bLogFilt
     m_methodName = "dynamicLightFilter";
     m_alpha = 0.7;
     m_stableMethod = stableMethod;
-    m_smallFactor = 0.1;
+    m_smallFactor = 0.15;
     m_largeFactor = 0.25;
     m_largelargeFactor = 0.3;
     m_bLogFilt = bLogFilt;
@@ -23,7 +23,7 @@ dynamicLightFilter::dynamicLightFilter(LightChart* pChart, int numTh, int stable
     m_methodName = "dynamicLightFilter";
     m_alpha = 0.7;
     m_stableMethod = stableMethod;
-    m_smallFactor = 0.1;
+    m_smallFactor = 0.15;
     m_largeFactor = 0.25;
     m_largelargeFactor = 0.3;
     m_bLogFilt = bLogFilt;
