@@ -4,8 +4,22 @@
 //#include "algorithm"
 //#include <vector>
 //#include <iostream>
-//#include <QDebug>
+#include <QDebug>
 //using namespace std;
+
+#include "QtAndroid"
+
+bool checkPermission() {
+    QtAndroid::PermissionResult r = QtAndroid::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE");
+    if(r == QtAndroid::PermissionResult::Denied) {
+        QtAndroid::requestPermissionsSync( QStringList() << "android.permission.WRITE_EXTERNAL_STORAGE" );
+        r = QtAndroid::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE");
+        if(r == QtAndroid::PermissionResult::Denied) {
+             return false;
+        }
+   }
+   return true;
+}
 
 int main(int argc, char *argv[])
 {
@@ -38,6 +52,9 @@ int main(int argc, char *argv[])
 //    }
 
 //    qDebug()<<up<<","<<down;
+
+    bool res = checkPermission();
+    qDebug()<<"checkPermission: "<<res;
 
     mainwindow w;
     w.setWindowState(Qt::WindowMaximized);

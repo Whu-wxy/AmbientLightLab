@@ -24,7 +24,7 @@ QString AndroidSetup::getExternalStorageDir()
 QString AndroidSetup::getAppDataDir()
 {
     QString szDir = getExternalStorageDir();
-    szDir += QDir::separator() + QString("AmbientLight") + QDir::separator();
+    szDir = szDir + QDir::separator() + QString("AmbientLight");
     qDebug()<<szDir;
     QDir dir(szDir);
     if(!dir.exists())
