@@ -200,7 +200,7 @@ void LightChart::onDataReach()
 #endif
 
     m_allLux.enqueue(lux);
-    while(m_allLux.count() > 10000) m_allLux.dequeue();
+    while(m_allLux.count() > 100000) m_allLux.dequeue();
 
 
     //    if(!m_curTime.isValid())
