@@ -55,7 +55,7 @@ void mainWidget::onExportToFile()
 #ifdef Q_OS_ANDROID
     AndroidSetup setup;
     QString dataDir = setup.getAppDataDir();
-    m_chart->exportToFile(dataDir + "record.txt");
+    m_chart->exportToFile(dataDir + QDir::separator() + "record.txt");
 #endif
 }
 

@@ -461,20 +461,25 @@ void LightChart::exportToFile(QString path)
 {
     if(m_allLux.empty()) return;
 
+    qDebug()<<"exportToFile: "<<path;
+
     QString res;
-    while(m_allLux.count() > 0)
+    for(int i=0; i<m_allLux.count(); i++)
     {
-        int i = m_allLux.head();
-        res += QString::number(i);
+        int lux = m_allLux.at(i);
+        res += QString::number(lux);
         res += ",";
     }
     res.remove(res.count()-1, 1);
 
     QFile file(path);
-    if(file.open(QIODevice::WriteOnly))
+    if(file.open(QIODevice::ReadWrite))
     {
         file.write(res.toLatin1());
+        qDebug()<<"exportToFile: write";
     }
+    else
+        qDebug()<<"exportToFile: file.open failed";
 }
 
 void LightChart::clear()
