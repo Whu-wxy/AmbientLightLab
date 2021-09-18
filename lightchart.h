@@ -31,6 +31,7 @@ using namespace std;
 
 #define MA
 #define MINMAX
+//#define ONLY_LOOK
 
 class LightChart : public QChartView
 {

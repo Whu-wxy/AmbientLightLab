@@ -3,9 +3,16 @@
 LightChart::LightChart(QWidget *parent)
     : QChartView(parent)
 {
+#ifdef ONLY_LOOK
+    m_filter = nullptr;
+#ifdef MA
+    m_filter2 = nullptr;
+#endif
+#else
     m_filter = new lightfilter(4);
 #ifdef MA
     m_filter2 = new lightfilter(8);
+#endif
 #endif
 
     m_lastDelta = 0;
@@ -186,7 +193,8 @@ void LightChart::onDataReach()
         stableline2->clear();
         m_stableXYSeries2->clear();
         m_allLux.clear();
-        m_filter->reset();
+        if(m_filter)
+            m_filter->reset();
         if(m_filter2)
             m_filter2->reset();
 #ifdef MINMAX
@@ -242,7 +250,9 @@ void LightChart::onDataReach()
     line->replace(newlist);//替换更新
     m_xySeries->replace(newlist);
 
-    int res = stablize(lux);
+    int res = -1;
+    if(m_filter)
+        res = stablize(lux);
 #ifdef MA
     if(m_filter2)
         stablize2(lux);

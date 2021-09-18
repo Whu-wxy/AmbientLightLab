@@ -13,6 +13,7 @@ mainWidget::mainWidget(QWidget *parent) : QWidget(parent)
     m_exportBtn = new QPushButton("导出");
     m_export2Btn = new QPushButton("到文件");
     m_clearBtn = new QPushButton("清除");
+#ifndef ONLY_LOOK
     m_methodBtn = new QPushButton("滞后");
     m_method = 0;
     m_queThEdit = new QLineEdit(this);
@@ -20,15 +21,17 @@ mainWidget::mainWidget(QWidget *parent) : QWidget(parent)
     QFont font = m_queThEdit->font();
     font.setPixelSize(font.pixelSize()*0.7);
     m_queThEdit->setFont(font);
+#endif
 
     vlay->addWidget(m_dataEdit);
     vlay->addWidget(m_exportBtn);
     vlay->addWidget(m_export2Btn);
     vlay->addWidget(m_clearBtn);
     vlay->addStretch();
+#ifndef ONLY_LOOK
     vlay->addWidget(m_methodBtn);
     vlay->addWidget(m_queThEdit);
-
+#endif
     mainLay->addWidget(m_chart);
     mainLay->addLayout(vlay);
     mainLay->setStretch(0, 20);
@@ -38,10 +41,10 @@ mainWidget::mainWidget(QWidget *parent) : QWidget(parent)
     connect(m_exportBtn, SIGNAL(clicked()), this, SLOT(onExport()));
     connect(m_export2Btn, SIGNAL(clicked()), this, SLOT(onExportToFile()));
     connect(m_clearBtn, SIGNAL(clicked()), this, SLOT(onClear()));
+#ifndef ONLY_LOOK
     connect(m_methodBtn, SIGNAL(clicked()), this, SLOT(onMethod()));
-
     connect(m_queThEdit, SIGNAL(returnPressed()), this, SLOT(onSetQue()));
-
+#endif
 }
 
 void mainWidget::onExport()
